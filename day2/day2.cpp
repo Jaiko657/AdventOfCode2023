@@ -53,8 +53,11 @@ BallCount getBallCount(char*& pch) {
     return ballCount;
 }
 
-bool isValidRound(std::string line) {
+int getRoundPower(std::string line) {
     char* pch = &line[6];
+    int currentMaxRed = 0;
+    int currentMaxGreen = 0;
+    int currentMaxBlue = 0;
     while (*pch != ':') pch++;
     pch++;
     //pointer at to start game now
@@ -68,25 +71,24 @@ bool isValidRound(std::string line) {
             BallCount bc = getBallCount(pch);
             switch (bc.color) {
             case RED:
-                if (bc.count > MAX_RED) {
-                    return false;
+                if (bc.count > currentMaxRed) {
+                    currentMaxRed = bc.count;
                 }
                 break;
             case GREEN:
-                if (bc.count > MAX_GREEN) {
-                    return false;
+                if (bc.count > currentMaxGreen) {
+                    currentMaxGreen = bc.count;
                 }
                 break;
             case BLUE:
-                if (bc.count > MAX_BLUE) {
-                    return false;
+                if (bc.count > currentMaxBlue) {
+                    currentMaxBlue = bc.count;
                 }
                 break;
             }
         }
-
     }
-    return true;
+    return currentMaxRed * currentMaxGreen * currentMaxBlue;
 }
 
 int main() {
@@ -101,13 +103,9 @@ int main() {
     int sum = 0;
     while (std::getline(file, line)) {
         int round = getRoundNumber(&line[5]);
-        cout << round << ' ';
-        if (isValidRound(line)) {
-            cout << "Valid";
-            sum += round;
-        }
-        else cout << "Invalid";
-        cout << endl;
+        int roundPower = getRoundPower(line);
+        cout << round << ' ' << roundPower << endl;
+        sum += roundPower;
     }
     file.close();
     cout << sum << endl;
