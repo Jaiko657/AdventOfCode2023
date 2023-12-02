@@ -4,9 +4,9 @@
 
 using namespace std;
 
-int getNumber(char *ch) {
+int getNumber(char* ch) {
     if (isdigit(*ch)) return (int)((*ch) - '0');
-    
+
     if (strncmp(ch, "one", 3) == 0)
         return 1;
     else if (strncmp(ch, "two", 3) == 0)
@@ -48,7 +48,7 @@ int main() {
             break;
         }
         currentNumber *= 10;
-        for (int i = line.size()-1; i >= 0; i--) {
+        for (int i = line.size() - 1; i >= 0; i--) {
             int num = getNumber(&line[i]);
             if (num == -1) continue;
             currentNumber += num;
@@ -58,5 +58,5 @@ int main() {
     }
     file.close();
     cout << sum << endl;
-	return 0;
+    return 0;
 }
