@@ -6,42 +6,46 @@
 
 using namespace std;
 
+typedef unsigned long long int ULLInt;
+
 struct Race {
-    int time;
-    int distance;
+    ULLInt time;
+    ULLInt distance;
 };
 
 vector<Race>* parseInput() {
     auto* races = new std::vector<Race>();
     std::ifstream file("input.txt");
     std::string line;
-    std::vector<int> times, distances;
 
     // Read Time Line
     if (getline(file, line)) {
+        ULLInt time = 0;
         std::istringstream iss(line.substr(line.find(":") + 1));
-        int time;
-        while (iss >> time) {
-            times.push_back(time);
+        char digit;
+        while (iss >> digit) {
+            if (isdigit(digit)) {
+                time = time * 10 + (digit - '0');
+            }
         }
-    }
 
-    // Read Distance Line
-    if (getline(file, line)) {
-        std::istringstream iss(line.substr(line.find(":") + 1));
-        int distance;
-        while (iss >> distance) {
-            distances.push_back(distance);
+        // Read Distance Line
+        if (getline(file, line)) {
+            ULLInt distance = 0;
+            std::istringstream iss(line.substr(line.find(":") + 1));
+            while (iss >> digit) {
+                if (isdigit(digit)) {
+                    distance = distance * 10 + (digit - '0');
+                }
+            }
+
+            // Store in vector
+            races->push_back({ time, distance });
         }
     }
 
     // Close the file
     file.close();
-
-    // Store the values in the vector
-    for (size_t i = 0; i < times.size(); ++i) {
-        races->push_back({ times[i], distances[i] });
-    }
 
     return races;
 }
@@ -52,11 +56,11 @@ int main() {
     int final = 1;
     for (int i = 0; i < races->size(); i++) {
         Race* race = &races->at(i);
-        int raceWinCount = 0;
+        ULLInt raceWinCount = 0;
 
-        const int maxTime = race->time;
-        for (int time = 1; time < maxTime; time++) {
-            int distanceTravelled = (time * maxTime) - (time * time);
+        const ULLInt maxTime = race->time;
+        for (ULLInt time = 1; time < maxTime; time++) {
+            ULLInt distanceTravelled = (time * maxTime) - (time * time);
             if (distanceTravelled > race->distance) {
                 raceWinCount++;
             }
