@@ -72,9 +72,7 @@ int main() {
         }
     }
 
-    //find distances
-    //for i in range(len(coordinates)) :
-    //    for j in range(i + 1, len(coordinates)) :
+    //find and sum distances
     int sum = 0;
     for (int i = 0; i < cords.size(); i++) {
         for (int j = i + 1; j < cords.size(); j++) {
