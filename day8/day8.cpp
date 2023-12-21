@@ -1,7 +1,11 @@
 #include <string>
 #include <fstream>
 #include <iostream>
+#include <vector>
+#include <numeric>
 using namespace std;
+
+typedef unsigned long long uul;
 
 int stringToInt(const string& str) {
     if (str.length() != 3) {
@@ -34,7 +38,6 @@ public:
     //stringToInt("ZZZ") = 1644825
     const int size = 1644825+1;
     TreeNode** data;
-    string currentItem = "AAA";
 
     Tree() {
         data = new TreeNode*[size];
@@ -57,23 +60,43 @@ public:
         data[stringToInt(item)] = node;
     }
 
-    bool makeTurn(char turn) {
-        TreeNode* currentNode = data[stringToInt(currentItem)];
+    bool makeTurn(char turn, string* currentItem) {
+        TreeNode* currentNode = data[stringToInt(*currentItem)];
         if (turn == 'L') {
-            currentItem = currentNode->left;
+            *currentItem = currentNode->left;
         }
         else {
-            currentItem = currentNode->right;
+            *currentItem = currentNode->right;
         }
-        if (currentItem == "ZZZ") {
+        if ((*currentItem)[2] == 'Z') {
             return true;
         }
         return false;
     }
 };
 
+uul gcd(uul a, uul b) {
+    while (b != 0) {
+        uul t = b;
+        b = a % b;
+        a = t;
+    }
+    return a;
+}
+uul lcm(uul a, uul b) {
+    return a / gcd(a, b) * b; // Multiplying first to avoid potential underflow
+}
+uul lcmOfVector(const std::vector<int>& nums) {
+    uul result = 1;
+    for (int num : nums) {
+        result = lcm(result, num);
+    }
+    return result;
+}
+
 int main() {
     Tree tree;
+    vector<string> currentItems;
     ifstream file("input.txt");
     string line;
     if (!file.is_open()) {
@@ -88,21 +111,33 @@ int main() {
 
     while (getline(file, line)) {
         tree.addTreeNode(line);
-    }
-
-    int i = 0;
-    int amountOfMoves = 0;
-    bool finished = false;
-    while (true) {
-        finished = tree.makeTurn(instructions[i]);
-        
-        amountOfMoves++;
-        i++;
-        if (i >= instructions.size()) {
-            i = 0;
+        auto str = line.substr(0, 3);
+        if (str[2] == 'A') {
+            currentItems.push_back(str);
         }
-        if (finished) break;
     }
-    cout << amountOfMoves << endl;
+    file.close();
+
+    vector<int> moveCounts;
+    //loop over all the ghost items with 'A' at end
+    for (int i = 0; i < currentItems.size(); i++) {
+		int instructionIndex = 0;
+		int amountOfMoves = 0;
+		//loop over instructions
+		while (true) {
+																		  //is modified
+			bool finished = tree.makeTurn(instructions[instructionIndex], &currentItems[i]);
+			//move to next instruction
+			instructionIndex++;
+			if (instructionIndex >= instructions.size()) {
+				instructionIndex = 0;
+			}
+			
+			amountOfMoves++;
+			if (finished) break;
+		}
+        moveCounts.push_back(amountOfMoves);
+    }
+    std::cout << lcmOfVector(moveCounts) << endl;
     return 0;
 }
